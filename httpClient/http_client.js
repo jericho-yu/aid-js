@@ -25,6 +25,17 @@ const HttpContentTypes = {
     Javascript: 'application/javascript',
 };
 
+const AcceptTypes = {
+    Json: 'application/json',
+    Xml: 'application/xml',
+    Plain: 'text/plain',
+    Html: 'text/html',
+    Css: 'text/css',
+    Javascript: 'application/javascript',
+    Steam: 'application/octet-stream',
+    Any: '*/*',
+};
+
 class HttpClient {
     async constructor(url) {
         this.url = url;
@@ -74,16 +85,29 @@ class HttpClient {
         return this;
     }
 
-    setHeaderContentType(key) {
-        const value = this.getContentTypeValue(key);
+    async setHeaderContentType(key) {
+        const value = await this.getHeaderContentType(key);
         if (value) {
             this.headers['Content-Type'] = value;
         }
         return this;
     }
 
-    getContentTypeValue(key) {
+    async getHeaderContentType(key) {
         return HttpContentTypes[key] || '';
+    }
+
+    async setHeaderAccept(key){
+        const value = AcceptTypes[key];
+        if (value) {
+            this.headers['Accept'] = [value];
+        }
+
+        return this;
+    }
+
+    async getHeaderAccept(key){
+        return AcceptTypes[key] || '';
     }
 
     async setBody(body) {
@@ -92,28 +116,28 @@ class HttpClient {
     }
 
     async setJsonBody(body) {
-        this.setHeaderContentType(HttpContentTypes.Json);
+        await this.setHeaderContentType(HttpContentTypes.Json);
         this.body = JSON.stringify(body);
 
         return this;
     }
 
     async setXmlBody() {
-        this.setHeaderContentType(HttpContentTypes.Xml);
+        await this.setHeaderContentType(HttpContentTypes.Xml);
         this.body = (xml2js.Builder()).buildObject(body);
 
         return this;
     }
 
     async setFormBody(body) {
-        this.setHeaderContentType(HttpContentTypes.Form);
+        await this.setHeaderContentType(HttpContentTypes.Form);
         this.body = querystring.stringify(body);
 
         return this;
     }
 
     async setFormDataBody(texts, files) {
-        this.setHeaderContentType(HttpContentTypes.FormData);
+        await this.setHeaderContentType(HttpContentTypes.FormData);
         const form = new FormData();
 
         if (texts) {
@@ -134,21 +158,21 @@ class HttpClient {
     }
 
     async setPlainBody(body) {
-        this.setHeaderContentType(HttpContentTypes.Plain);
+        await this.setHeaderContentType(HttpContentTypes.Plain);
         this.body = Buffer.from(body, 'utf-8');
 
         return this;
     }
 
     async setCssBody(body) {
-        this.setHeaderContentType(HttpContentTypes.Css);
+        await this.setHeaderContentType(HttpContentTypes.Css);
         this.body = Buffer.from(body, 'utf-8');
 
         return this;
     }
 
     async setJavascriptBody(body) {
-        this.setHeaderContentType(HttpContentTypes.Javascript);
+        await this.setHeaderContentType(HttpContentTypes.Javascript);
         this.body = Buffer.from(body, 'utf-8');
 
         return this;
@@ -159,8 +183,8 @@ class HttpClient {
             const file = fs.readFileSync(filename);
             const size = file.length;
 
-            this.requestBody = file;
-            this.requestHeaders['Content-Length'] = size.toString();
+            this.body = file;
+            this.headers['Content-Length'] = size.toString();
         } catch (err) {
             this.err = err;
         }
