@@ -1,0 +1,20 @@
+{
+	"type": "module",
+	"name": "aid",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"dev": "node main.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "JerichoYu",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"collect.js": "^4.36.1",
+		"dataframe-js": "^1.4.4",
+		"sm3": "^1.0.3",
+		"xlsx": "^0.18.5"
+	}
+}
