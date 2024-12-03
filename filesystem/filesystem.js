@@ -1,8 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-export const newByAbs = async() =>{
-	
+export const newByAbs = async(dir) =>{
+	return new FileSystem(dir);
+};
+
+export const newByRelative = async (dir) => {
+	return new FileSystem(path.resolve(process.cwd(), dir));
 };
 
 export class FileSystem {
@@ -14,11 +18,7 @@ export class FileSystem {
 		this.init();
 	}
 
-	static newByAbs(dir) {
-		return new FileSystem(dir);
-	}
-
-	init() {
+	async init() {
 		try {
 			const stats = fs.statSync(this.dir);
 			this.isExist = true;
@@ -33,35 +33,35 @@ export class FileSystem {
 		}
 	}
 
-	copy() {
+	async copy() {
 		return new FileSystem(this.dir);
 	}
 
-	setDirByRelative(dir) {
+	async setDirByRelative(dir) {
 		this.dir = path.resolve(process.cwd(), dir);
-		this.init();
+		await this.init();
 		return this;
 	}
 
-	setDirByAbs(dir) {
+	async setDirByAbs(dir) {
 		this.dir = dir;
 		this.init();
 		return this;
 	}
 
-	join(dir) {
+	async join(dir) {
 		this.dir = path.join(this.dir, dir);
 		this.init();
 		return this;
 	}
 
-	joins(...dirs) {
-		this.dir = path.join(this.dir, ...dirs);
-		this.init();
+	async joins(...dirs) {
+		this.dir = await path.join(this.dir, ...dirs);
+		await this.init();
 		return this;
 	}
 
-	mkdir() {
+	async mkdir() {
 		if (!this.isExist) {
 			fs.mkdirSync(this.dir, { recursive: true });
 			this.init();
@@ -69,7 +69,7 @@ export class FileSystem {
 		return this;
 	}
 
-	delete() {
+	async delete() {
 		if (this.isExist) {
 			if (this.isDir) {
 				fs.rmdirSync(this.dir, { recursive: true });
@@ -81,32 +81,32 @@ export class FileSystem {
 		return this;
 	}
 
-	read() {
+	async read() {
 		if (this.isFile) {
 			return fs.readFileSync(this.dir);
 		}
 		throw new Error('Path is not a file');
 	}
 
-	write(content) {
+	async write(content) {
 		fs.writeFileSync(this.dir, content);
 		this.init();
 		return this;
 	}
 
-	append(content) {
+	async append(content) {
 		fs.appendFileSync(this.dir, content);
 		this.init();
 		return this;
 	}
 
-	copyFile(dstDir, dstFilename) {
+	async copyFile(dstDir, dstFilename) {
 		const dstPath = path.join(dstDir, dstFilename || path.basename(this.dir));
 		fs.copyFileSync(this.dir, dstPath);
 		return new FileSystem(dstPath);
 	}
 
-	copyDir(dstDir) {
+	async copyDir(dstDir) {
 		if (!this.isDir) {
 			throw new Error('Source is not a directory');
 		}
