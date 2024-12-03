@@ -14,7 +14,10 @@
 	"dependencies": {
 		"collect.js": "^4.36.1",
 		"dataframe-js": "^1.4.4",
+		"form-data": "^4.0.1",
+		"querystring": "^0.2.1",
 		"sm3": "^1.0.3",
-		"xlsx": "^0.18.5"
+		"xlsx": "^0.18.5",
+		"xml2js": "^0.6.2"
 	}
 }
