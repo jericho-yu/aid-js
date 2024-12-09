@@ -6,7 +6,7 @@ import xml2js from 'xml2js';
 import querystring from 'querystring';
 import FormData from 'form-data';
 
-const HttpMethods = {
+export const HttpMethods = {
     Get: 'GET',
     Post: 'POST',
     Put: 'PUT',
@@ -14,7 +14,7 @@ const HttpMethods = {
     Delete: 'DELETE'
 };
 
-const HttpContentTypes = {
+export const HttpContentTypes = {
     Json: 'application/json',
     Xml: 'application/xml',
     Form: 'application/x-www-form-urlencoded',
@@ -25,7 +25,7 @@ const HttpContentTypes = {
     Javascript: 'application/javascript',
 };
 
-const AcceptTypes = {
+export const AcceptTypes = {
     Json: 'application/json',
     Xml: 'application/xml',
     Plain: 'text/plain',
@@ -37,7 +37,7 @@ const AcceptTypes = {
 };
 
 class HttpClient {
-    async constructor(url) {
+    constructor(url) {
         this.url = url;
         this.method = 'GET';
         this.headers = {};
@@ -48,15 +48,15 @@ class HttpClient {
         this.ca = null;
     }
 
-    static new = async (url) => new HttpClient(url);
+    static new = (url) => new HttpClient(url);
 
-    static newPost = async (url) => (await HttpClient.new(url)).setMethod(HttpMethods.Post);
+    static newPost = (url) => HttpClient.new(url).setMethod(HttpMethods.Post);
 
-    static newPut = async (url) => (await HttpClient.new(url)).setMethod(HttpMethods.Put);
+    static newPut = (url) => HttpClient.new(url).setMethod(HttpMethods.Put);
 
-    static newPatch = async (url) => (await HttpClient.new(url)).setMethod(HttpMethods.Patch);
+    static newPatch = (url) => HttpClient.new(url).setMethod(HttpMethods.Patch);
 
-    static newDelete = async (url) => (await HttpClient.new(url)).setMethod(HttpMethods.Delete);
+    static newDelete = (url) => HttpClient.new(url).setMethod(HttpMethods.Delete);
 
     async setCert(certPath, keyPath, caPath) {
         this.cert = fs.readFileSync(certPath);
@@ -97,7 +97,7 @@ class HttpClient {
         return HttpContentTypes[key] || '';
     }
 
-    async setHeaderAccept(key){
+    async setHeaderAccept(key) {
         const value = AcceptTypes[key];
         if (value) {
             this.headers['Accept'] = [value];
@@ -106,7 +106,7 @@ class HttpClient {
         return this;
     }
 
-    async getHeaderAccept(key){
+    async getHeaderAccept(key) {
         return AcceptTypes[key] || '';
     }
 
