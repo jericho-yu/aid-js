@@ -26,7 +26,6 @@ export class Logger {
     async error (content) {
         generateLogger(this.fs.copy().join('error').getDir()).error(content);
     }
-
 }
 
 
