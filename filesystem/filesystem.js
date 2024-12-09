@@ -1,14 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-export const newByAbs = async(dir) =>{
-	return new FileSystem(dir);
-};
-
-export const newByRelative = async (dir) => {
-	return new FileSystem(path.resolve(process.cwd(), dir));
-};
-
 export class FileSystem {
 	constructor(dir) {
 		this.dir = dir;
@@ -18,7 +10,7 @@ export class FileSystem {
 		this.init();
 	}
 
-	async init() {
+	init() {
 		try {
 			const stats = fs.statSync(this.dir);
 			this.isExist = true;
@@ -33,35 +25,39 @@ export class FileSystem {
 		}
 	}
 
-	async copy() {
+	static newByAbs = dir => new FileSystem(dir);
+
+	static newByRelative = dir => new FileSystem(path.resolve(process.cwd(), dir));
+
+	copy() {
 		return new FileSystem(this.dir);
 	}
 
-	async setDirByRelative(dir) {
+	setDirByRelative(dir) {
 		this.dir = path.resolve(process.cwd(), dir);
-		await this.init();
+		this.init();
 		return this;
 	}
 
-	async setDirByAbs(dir) {
+	setDirByAbs(dir) {
 		this.dir = dir;
 		this.init();
 		return this;
 	}
 
-	async join(dir) {
+	join(dir) {
 		this.dir = path.join(this.dir, dir);
 		this.init();
 		return this;
 	}
 
-	async joins(...dirs) {
-		this.dir = await path.join(this.dir, ...dirs);
-		await this.init();
+	joins(...dirs) {
+		this.dir = path.join(this.dir, ...dirs);
+		this.init();
 		return this;
 	}
 
-	async mkdir() {
+	mkdir() {
 		if (!this.isExist) {
 			fs.mkdirSync(this.dir, { recursive: true });
 			this.init();
@@ -69,7 +65,7 @@ export class FileSystem {
 		return this;
 	}
 
-	async delete() {
+	delete() {
 		if (this.isExist) {
 			if (this.isDir) {
 				fs.rmdirSync(this.dir, { recursive: true });
@@ -81,32 +77,32 @@ export class FileSystem {
 		return this;
 	}
 
-	async read() {
+	read() {
 		if (this.isFile) {
 			return fs.readFileSync(this.dir);
 		}
 		throw new Error('Path is not a file');
 	}
 
-	async write(content) {
+	write(content) {
 		fs.writeFileSync(this.dir, content);
 		this.init();
 		return this;
 	}
 
-	async append(content) {
+	append(content) {
 		fs.appendFileSync(this.dir, content);
 		this.init();
 		return this;
 	}
 
-	async copyFile(dstDir, dstFilename) {
+	copyFile(dstDir, dstFilename) {
 		const dstPath = path.join(dstDir, dstFilename || path.basename(this.dir));
 		fs.copyFileSync(this.dir, dstPath);
 		return new FileSystem(dstPath);
 	}
 
-	async copyDir(dstDir) {
+	copyDir(dstDir) {
 		if (!this.isDir) {
 			throw new Error('Source is not a directory');
 		}
@@ -123,6 +119,8 @@ export class FileSystem {
 		});
 		return new FileSystem(dstPath);
 	}
-}
 
-// module.exports = FileSystem;
+	getDir() {
+		return this.dir;
+	}
+}
