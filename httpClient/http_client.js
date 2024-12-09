@@ -197,7 +197,6 @@ class HttpClient {
         return this;
     }
 
-
     async send() {
         return new Promise((resolve, reject) => {
             const urlObj = new URL(this.url);
