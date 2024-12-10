@@ -4,16 +4,14 @@ import moment from "moment";
 
 export class Logger {
     constructor(dir) {
-        if (Logger.instance) throw new Error('Use Singleton.getInstance() to get the single instance of this class.');
-
         this.fs = FileSystem.newByAbs(dir).join(moment().format('YYYY-MM-DD'));
         if (!this.fs.isDir) this.fs.mkdir();
     }
 
-    static once(dir) {
-        if (!Logger.instance) Logger.instance = new Logger(dir);
-        return Logger.instance;
-    }
+    // static once(dir) {
+    //     if (!Logger.instance) Logger.instance = new Logger(dir);
+    //     return Logger.instance;
+    // }
 
     async info (content) {
         generateLogger(this.fs.copy().join('info').getDir()).info(content);
@@ -43,13 +41,13 @@ const generateLogger = filename => {
             customFormat,
         ),
         transports: [
-            new transports.Console(),
+            null,
             new transports.File({filename: `${filename}.log`}),
         ],
     })
 };
 
-const logger = Logger.once("./logs");
-await logger.info("debug message");
+const logger = new Logger("./logs");
+await logger.info("info message");
 await logger.warn("warn message");
 await logger.error("error message");
